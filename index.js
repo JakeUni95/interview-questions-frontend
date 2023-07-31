@@ -20,6 +20,8 @@ nunjucks.configure('views', {
   express: app,
 });
 
+app.set('view engine', 'njk');
+
 const query = gql`
   query {
     questions {
@@ -33,17 +35,7 @@ const query = gql`
 `;
 
 app.get('/', async(req, res) => {
-  const data = await client.request(query);
-
-  const questions = data.questions.data.map(questionData => ({
-    questionText: questionData.attributes.question,
-  }));
-  
-  console.log(questions);
-
-  //console.log(JSON.stringify(data, null, 2))
   res.render('index.njk', {
-    questions,
     someNumber: 42,
     someItems: [   
       {   
@@ -56,7 +48,23 @@ app.get('/', async(req, res) => {
   });
 });
 
+app.get('/answer', async(req, res) => {
+  const data = await client.request(query);
+
+  const questions = data.questions.data.map(questionData => ({
+    questionText: questionData.attributes.question,
+  }));
+  
+console.log(questions);
+
+ res.render('answer.njk', {
+    questions
+  });
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   console.log(`view here: http://localhost:${port}`);
 });
+
+
