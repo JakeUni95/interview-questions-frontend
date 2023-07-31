@@ -22,7 +22,7 @@ nunjucks.configure('views', {
 
 app.set('view engine', 'njk');
 
-const query = gql`
+const queryQuestion = gql`
   query {
     questions {
       data {
@@ -34,31 +34,38 @@ const query = gql`
   }
 `;
 
+const querySkill = gql`
+query {
+  skills {
+    data {
+      attributes {
+        skillName
+     }
+    }
+   }
+  }
+  `;
+
 app.get('/', async(req, res) => {
+  const data = await client.request(querySkill)
+
+  const skills = data.skills.data.map(skillData => ({
+    skillText: skillData.attributes.skillName
+  }))
+
   res.render('index.njk', {
-    someNumber: 42,
-    someItems: [   
-      {   
-        title: 'First item',  
-      },  
-      {  
-        title: 'Second item', 
-      },  
-    ],
+    skills: skills
   });
 });
 
 app.get('/answer', async(req, res) => {
-  const data = await client.request(query);
-
+  const data = await client.request(queryQuestion);
+  
   const questions = data.questions.data.map(questionData => ({
     questionText: questionData.attributes.question,
   }));
-  
-console.log(questions);
-
- res.render('answer.njk', {
-    questions
+    res.render('answer.njk', {
+      questions: questions
   });
 });
 

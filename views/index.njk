@@ -1,7 +1,28 @@
-<h1>Hello</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+        {% block pageTitle %}
+          <title>Interview Questions</title>
+        {% endblock %}
+  </head>
+  <body>
+  {% block content %}
+      <h1>What skills are you hiring for?</h1>
 
-<p>Some test text...</p>
+      <p>Please select the required 
+      categories to recieve relevant 
+      questions.
+      </p>
 
-<p>{{ someNumber }}</p>
+      <ul>
+        {% for skill in skills %}
+         <li>{{ skill.skillText }}</li>
+        {% endfor %}
+      </ul>
 
-  
+      <form action="answer" method="GET">
+      <button>Submit</button>
+
+  {% endblock %}
+  </body>
