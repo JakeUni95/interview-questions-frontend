@@ -1,28 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-        {% block pageTitle %}
-          <title>Interview Questions</title>
-        {% endblock %}
-  </head>
-  <body>
-  {% block content %}
-      <h1>What skills are you hiring for?</h1>
+{% extends "govuk/template.njk" %}
 
-      <p>Please select the required 
-      categories to recieve relevant 
+{% block head %}
+  <link href="/govuk-frontend/govuk/all.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{{ govukBreadcrumbs({
+  items: [
+    {
+      text: "Home",
+      href: "#"
+    },
+    {
+      text: "Passports, travel and living abroad",
+      href: "#"
+    },
+    {
+      text: "Travel abroad",
+      href: "#"
+    }
+  ]
+}) }}
+
+  <h1 class="govuk-heading-xl">Default page template</h1>
+  
+  <p>Please select the required 
+      categories to receive relevant 
       questions.
-      </p>
+  </p>
 
-      <ul>
-        {% for skill in skills %}
-         <li>{{ skill.skillText }}</li>
-        {% endfor %}
-      </ul>
+  <ul>
+     {% for skill in skills %}
+      <li>{{ skill.skillText }}</li>
+     {% endfor %}
+  </ul>
 
-      <form action="answer" method="GET">
-      <button>Submit</button>
+  <form action="question" method="GET">
+  <button>Submit</button>
 
-  {% endblock %}
-  </body>
+{% endblock %}
+
+{% block bodyEnd %}
+  {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
+  <script src="/govuk-frontend/all.js"></script>
+  <script>window.GOVUKFrontend.initAll()</script>
+{% endblock %}

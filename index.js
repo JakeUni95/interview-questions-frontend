@@ -15,7 +15,10 @@ const client = new GraphQLClient(process.env.GRAPHQL_ENDPOINT, {
 });
 console.log(process.env.GRAPHQL_ENDPOINT)
 
-nunjucks.configure('views', {
+nunjucks.configure([
+  'node_modules/govuk-frontend/',
+  'views'
+], {
   autoescape: true,
   express: app,
 });
@@ -58,13 +61,13 @@ app.get('/', async(req, res) => {
   });
 });
 
-app.get('/answer', async(req, res) => {
+app.get('/question', async(req, res) => {
   const data = await client.request(queryQuestion);
   
   const questions = data.questions.data.map(questionData => ({
     questionText: questionData.attributes.question,
   }));
-    res.render('answer.njk', {
+    res.render('question.njk', {
       questions: questions
   });
 });
