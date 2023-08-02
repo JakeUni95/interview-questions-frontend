@@ -2,7 +2,9 @@ const { gql, GraphQLClient } = require("graphql-request");
 const dotenv = require('dotenv');
 const express = require('express');
 const nunjucks = require('nunjucks');
+const path = require('path');
 const app = express();
+app.use(express.static(path.join(__dirname, 'dist')));
 
 dotenv.config();
 
