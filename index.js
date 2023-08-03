@@ -5,7 +5,6 @@ const nunjucks = require('nunjucks');
 const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
-
 dotenv.config();
 
 const port = process.env.PORT ?? 3000;
@@ -78,4 +77,120 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   console.log(`view here: http://localhost:${port}`);
 });
+
+let a = {
+  "data": {
+    "skills": {
+      "data": [
+        {
+          "attributes": {
+            "skillName": "Java",
+            "skillCategories": {
+              "data": [
+                {
+                  "attributes": {
+                    "skillCategoryName": "Programming languages"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "attributes": {
+            "skillName": "C#",
+            "skillCategories": {
+              "data": [
+                {
+                  "attributes": {
+                    "skillCategoryName": "Programming languages"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "attributes": {
+            "skillName": "Azure",
+            "skillCategories": {
+              "data": [
+                {
+                  "attributes": {
+                    "skillCategoryName": "Infrastructure"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "attributes": {
+            "skillName": "Working alone",
+            "skillCategories": {
+              "data": [
+                {
+                  "attributes": {
+                    "skillCategoryName": "Working style"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "attributes": {
+            "skillName": "Working in a team",
+            "skillCategories": {
+              "data": [
+                {
+                  "attributes": {
+                    "skillCategoryName": "Working style"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "attributes": {
+            "skillName": "AWS",
+            "skillCategories": {
+              "data": [
+                {
+                  "attributes": {
+                    "skillCategoryName": "Infrastructure"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+const rawSkills = a.data.skills.data
+const allSkills = rawSkills.map(rawSkill => ({
+   title: rawSkill.attributes.skillName,
+   category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName
+   })
+  )
+
+
+  const skillsByCategory = allSkills.reduce((groups, skill) => {
+     if (!groups[skill.category]) {
+       groups[skill.category] = {
+         title: skill.category,
+         skills: [],
+       };
+     }
+     groups[skill.category].skills.push(skill);
+     return groups;
+     }, {})
+
+      console.log(Object.values(skillsByCategory))
+
+  
 
