@@ -29,66 +29,32 @@
       categories to receive relevant 
       questions.
   </p>
-
-    {{ govukCheckboxes({
-      name: "technicalExperience",
-      fieldset: {
-        legend: {
-          html: "<strong>Select technical experience</strong>",
-          classes: "govuk-fieldset__legend--m"
-        }
-      },
-      hint: {
-        text: "Select all that apply."
-      },
-      items: [
-        {
-          value: "java",
-          text: "Java",
-          checked: true
-        },
-        {
-          value: "cSharp",
-          text: "C#",
-          checked: true
-        },
-        {
-          value: "azure",
-          text: "Azure"
-        }
-      ]
-    }) }}
-
-    {{ govukCheckboxes({
-      name: "workingStyle",
-      fieldset: {
-        legend: {
-          html: "<strong>Select working style</strong>",
-          classes: "govuk-fieldset__legend--m"
-        }
-      },
-      hint: {
-        text: "Select all that apply."
-      },
-      items: [
-        {
-          value: "alone", 
-          text: "Working alone"
-        },
-        {
-          value: "team",
-          text: "Working in a team",
-          checked: true
-        }
-      ]
-    }) }}
-
-    {% from "govuk/components/button/macro.njk" import govukButton %}
+    
+  {% from "govuk/components/button/macro.njk" import govukButton %}
   
+  <form action="/submit" method="POST">
+
+  {% for group in checkboxGroups %}
+  {{ govukCheckboxes({
+    name: group.title,
+    fieldset: {
+      legend: {
+        html: "<strong> Select " + group.title.toLowerCase() + "</strong>",
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    hint: {
+      text: "Select all that apply."
+    },
+    items: group.checkboxes
+  }) }}
+  {% endfor %}
+
     {{ govukButton({
       text: "Save and continue",
-      href: "question"
+      type: "submit"
     }) }}
+    </form>
 
   {% endcall %}
 

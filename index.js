@@ -5,6 +5,13 @@ const nunjucks = require('nunjucks');
 const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.urlencoded());
+
+app.post('/submit', (req, res) => {
+  console.log(req.body);
+
+  res.render('question.njk', { submittedData: req.body });
+});
 dotenv.config();
 
 const port = process.env.PORT ?? 3000;
@@ -57,9 +64,7 @@ app.get('/', async(req, res) => {
     skillText: skillData.attributes.skillName
   }))
 
-  res.render('index.njk', {
-    skills: skills
-  });
+  res.render('index.njk', { skills, checkboxGroups });
 });
 
 app.get('/question', async(req, res) => {
@@ -171,15 +176,15 @@ let a = {
   }
 }
 
-const rawSkills = a.data.skills.data
+const rawSkills = a.data.skills.data;
 const allSkills = rawSkills.map(rawSkill => ({
    title: rawSkill.attributes.skillName,
-   category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName
+   category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName,
    })
-  )
+  );
 
 
-  const skillsByCategory = allSkills.reduce((groups, skill) => {
+  const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
      if (!groups[skill.category]) {
        groups[skill.category] = {
          title: skill.category,
@@ -188,9 +193,19 @@ const allSkills = rawSkills.map(rawSkill => ({
      }
      groups[skill.category].skills.push(skill);
      return groups;
-     }, {})
+     }, {});
+     
+  console.log(skillsByCategoryMapping);
 
-      console.log(Object.values(skillsByCategory))
+const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
+    title: group.title,
+    checkboxes: group.skills.map(skill => ({
+      value: skill.title,
+      text: skill.title
+    }))
+   }));
+
+   console.log(checkboxGroups);
+
 
   
-
