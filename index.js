@@ -48,19 +48,8 @@ const queryQuestion = gql`
   }
 `;
 
-const querySkill = gql`
-query {
-  skills {
-    data {
-      attributes {
-        skillName
-     }
-    }
-   }
-  }
-  `;
 
- const queryGetSkills = gql` {
+ const queryGetSkillData = gql` {
     skills{
       data {
         attributes {
@@ -79,7 +68,7 @@ query {
     `;
 
 app.get('/', async(req, res) => {
-  const data = await client.request(queryGetSkills)
+  const data = await client.request(queryGetSkillData)
   const rawSkills = data.skills.data;
 
   const allSkills = rawSkills.map(rawSkill => ({
@@ -88,8 +77,8 @@ app.get('/', async(req, res) => {
     })
    );
  
-   const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
-      if (!groups[skill.category]) {
+  const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
+    if (!groups[skill.category]) {
         groups[skill.category] = {
           title: skill.category,
           skills: [],
@@ -99,19 +88,19 @@ app.get('/', async(req, res) => {
       return groups;
       }, {});
       
-   console.log(skillsByCategoryMapping);
+   //console.log(skillsByCategoryMapping);
  
- const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
+  const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
      title: group.title,
      checkboxes: group.skills.map(skill => ({
        value: skill.title,
-       text: skill.title
+       text: skill.title,
      }))
     }));
   
   res.render('index.njk', { 
-    allSkills, 
-    checkboxGroups, 
+    allSkills: allSkills, 
+    checkboxGroups: checkboxGroups, 
   });
 });
 
