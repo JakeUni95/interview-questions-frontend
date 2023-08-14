@@ -5,13 +5,16 @@ const nunjucks = require('nunjucks');
 const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
-app.post('/submit', (req, res) => {
-  console.log(req.body);
+app.get('/submit', (req, res) => {
+  console.log(req.query);
 
-  res.render('question.njk', { submittedData: req.body });
+  res.render('question.njk', { 
+    submittedData: req.query 
+  });
 });
+
 dotenv.config();
 
 const port = process.env.PORT ?? 3000;
@@ -57,14 +60,59 @@ query {
   }
   `;
 
+ const queryGetSkills = gql` {
+    skills{
+      data {
+        attributes {
+          skillName
+          skillCategories {
+            data {
+              attributes {
+                skillCategoryName
+              }
+            }
+          }
+       }
+      }
+     }
+    }
+    `;
+
 app.get('/', async(req, res) => {
-  const data = await client.request(querySkill)
+  const data = await client.request(queryGetSkills)
+  const rawSkills = data.skills.data;
 
-  const skills = data.skills.data.map(skillData => ({
-    skillText: skillData.attributes.skillName
-  }))
-
-  res.render('index.njk', { skills, checkboxGroups });
+  const allSkills = rawSkills.map(rawSkill => ({
+    title: rawSkill.attributes.skillName,
+    category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName,
+    })
+   );
+ 
+   const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
+      if (!groups[skill.category]) {
+        groups[skill.category] = {
+          title: skill.category,
+          skills: [],
+        };
+      }
+      groups[skill.category].skills.push(skill);
+      return groups;
+      }, {});
+      
+   console.log(skillsByCategoryMapping);
+ 
+ const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
+     title: group.title,
+     checkboxes: group.skills.map(skill => ({
+       value: skill.title,
+       text: skill.title
+     }))
+    }));
+  
+  res.render('index.njk', { 
+    allSkills, 
+    checkboxGroups, 
+  });
 });
 
 app.get('/question', async(req, res) => {
@@ -83,129 +131,7 @@ app.listen(port, () => {
   console.log(`view here: http://localhost:${port}`);
 });
 
-let a = {
-  "data": {
-    "skills": {
-      "data": [
-        {
-          "attributes": {
-            "skillName": "Java",
-            "skillCategories": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillCategoryName": "Programming languages"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "skillName": "C#",
-            "skillCategories": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillCategoryName": "Programming languages"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "skillName": "Azure",
-            "skillCategories": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillCategoryName": "Infrastructure"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "skillName": "Working alone",
-            "skillCategories": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillCategoryName": "Working style"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "skillName": "Working in a team",
-            "skillCategories": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillCategoryName": "Working style"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "skillName": "AWS",
-            "skillCategories": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillCategoryName": "Infrastructure"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      ]
-    }
-  }
-}
 
-const rawSkills = a.data.skills.data;
-const allSkills = rawSkills.map(rawSkill => ({
-   title: rawSkill.attributes.skillName,
-   category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName,
-   })
-  );
-
-
-  const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
-     if (!groups[skill.category]) {
-       groups[skill.category] = {
-         title: skill.category,
-         skills: [],
-       };
-     }
-     groups[skill.category].skills.push(skill);
-     return groups;
-     }, {});
-     
-  console.log(skillsByCategoryMapping);
-
-const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
-    title: group.title,
-    checkboxes: group.skills.map(skill => ({
-      value: skill.title,
-      text: skill.title
-    }))
-   }));
-
-   console.log(checkboxGroups);
 
 
   
