@@ -54,39 +54,16 @@
 
   {% endfor %}
 
-
-{# {{ govukSummaryList({
-  rows: [
-    {
-      key: {
-        text: "Technical experience"
-      },
-      value: {
-        html: ""
-        + "Java<br>"
-        +"C#"
-      }
-    },
-    {
-      key: {
-        text: "Working style"
-      },
-      value: {
-        text: "Working in a team"
-      }
-   
-    }
-  ]
-}) }} #}
-
 {% from "govuk/components/accordion/macro.njk" import govukAccordion %}
+
+{% for question in accordion %}
 
 {{ govukAccordion({
   id: "accordion-default",
   items: [
     {
       heading: {
-        text: "Is Java a pure object-oriented programming language?"
+        text: question
       },
       content: {
         html: ""
@@ -95,34 +72,11 @@
         + "<h3 class ='govuk-heading-s'>Guidance answer</h3>"
         + "<p class='govuk-body'>Java is not a pure object-oriented language as it uses primitive types such as byte, boolean, char, short, int, float, long and double.</p>"
       }
-    },
-    {
-      heading: {
-        text: "In C# how could you sort the elements of an array in descending order?"
-      },
-      content: {
-        html: ""
-        + "<h3 class='govuk-heading-s'>Why do we ask this?</h3>" 
-        + "<p class='govuk-body'>We want to know if the interviewee knows how to use basic methods.</p>"
-        + "<h3 class='govuk-heading-s'>Guidance answer</h3>"
-        + "<p class='govuk-body'>You can use the sort() and reverse() methods.</p>"
-      }
-    },
-    {
-      heading: {
-        text: "If one member of your team has a different point of view about what direction a project should be heading, how do you rectify this?"
-      },
-      content: {
-        html: ""
-        + "<h3 class='govuk-heading-s'>Why do we ask this?</h3>" 
-        + "<p class='govuk-body'>We want to know if the interviewee has acceptable communication and problem solving abilities.</p>"
-        + "<h3 class='govuk-heading-s'>Guidance answer</h3>"
-        + "<p class='govuk-body'>You can ask them for their input and allow them to guide you through their logic so they feel you take their 
-          opinion seriously, allowing it to become a team discussion where a conclusion can be reached.</p>"
-      }
     }
   ]
 }) }}
+
+{% endfor %}
 
 {% endblock %}
 

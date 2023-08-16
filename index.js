@@ -28,7 +28,7 @@ nunjucks.configure([
 
 app.set('view engine', 'njk');
 
-const queryGetQuestionData = gql`
+const queryGetQuestionData = gql` {
   questions {
     data {
       attributes {
@@ -99,157 +99,41 @@ app.get('/', async(req, res) => {
   });
 });
 
-app.get('/question', (req, res) => {
+app.get('/question', async(req, res) => {
+  const data = await client.request(queryGetQuestionData)
+
+  const rawQuestions = data.questions.data;
+  
+  const allQuestions = rawQuestions.map(question => ({
+    question: question.attributes.question,
+    skill: question.attributes.skills.data[0].attributes.skillName,
+  }));
+  
+  const questionBySkillsMapping = allQuestions.reduce((groups, question) => {
+    if (!groups[question.skill]) {
+      groups[question.skill] = {
+        skills: question.skill,
+        question: [],
+      };
+    }
+    groups[question.skill].question.push(question)
+   return groups;
+  }, {});
+
+  console.log(questionBySkillsMapping);
+  console.log(req.query);
+
+  const accordion = Object.values(questionBySkillsMapping).map(skill => ({
+}));
 
   res.render('question.njk', { 
     submittedData: req.query,
+    accordion: accordion,
   });
-}); 
-
-
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   console.log(`view here: http://localhost:${port}`);
 });
 
-let a = {
-  "data": {
-    "questions": {
-      "data": [
-        {
-          "attributes": {
-            "question": "Is Java a pure object-oriented programming language?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "Java"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "question": "In C# how could you sort the elements of an array in descending order?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "C#"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "question": "If one member of your team has a different point of view about what direction a project should be heading, how do you rectify this?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "Working in a team"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "question": "What is a class?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "Java"
-                  }
-                },
-                {
-                  "attributes": {
-                    "skillName": "C#"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "question": "What are the three models for cloud deployment?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "Azure"
-                  }
-                },
-                {
-                  "attributes": {
-                    "skillName": "AWS"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "question": "What is AWS?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "AWS"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          "attributes": {
-            "question": "How do you handle unexpected challenges or roadblocks when working independently?",
-            "skills": {
-              "data": [
-                {
-                  "attributes": {
-                    "skillName": "Working alone"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      ]
-    }
-  }
-}
-  
-const rawQuestions = a.data.questions.data;
-//console.log(rawQuestions);
-
-const allQuestions = rawQuestions.map(question => ({
-  question: question.attributes.question,
-  skill: question.attributes.skills.data.map(skill => skill.attributes.skillName)
-}));
-
-console.log(allQuestions)
-
-const questionBySkillsMapping = allQuestions.reduce((groups, question) => {
-  if (!groups[question.skill]) {
-    groups[question.skill] = {
-      skills: question.skill,
-      question: [],
-    };
-  }
-  //groups[question.skill].skills.push(question.skill)
-  groups[question.skill].question.push(question)
- return groups;
-}, {});
-//console.log(questionBySkillsMapping);
-//console.log(JSON.stringify(questionBySkillsMapping, null, 2));
