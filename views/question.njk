@@ -30,7 +30,32 @@
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
+{% for category, skills in submittedData %}
+
+{% if skills is string %}
+  {% set skillList = skills %}
+{% else %}
+  {% set skillList = skills | join("<br>") %} 
+{% endif %}
+
 {{ govukSummaryList({
+  rows: [
+    {
+      key: {
+        text: category
+      },
+      value: {
+        html: skillList
+      }
+
+    }
+    ]
+})}}
+
+  {% endfor %}
+
+
+{# {{ govukSummaryList({
   rows: [
     {
       key: {
@@ -52,7 +77,7 @@
    
     }
   ]
-}) }}
+}) }} #}
 
 {% from "govuk/components/accordion/macro.njk" import govukAccordion %}
 

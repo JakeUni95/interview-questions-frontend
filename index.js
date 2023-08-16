@@ -7,14 +7,6 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/submit', (req, res) => {
-  console.log(req.query);
-
-  res.render('question.njk', { 
-    submittedData: req.query 
-  });
-});
-
 dotenv.config();
 
 const port = process.env.PORT ?? 3000;
@@ -93,8 +85,6 @@ app.get('/', async(req, res) => {
       groups[skill.category].skills.push(skill);
       return groups;
       }, {});
-      
-   //console.log(skillsByCategoryMapping);
  
   const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
      title: group.title,
@@ -104,23 +94,18 @@ app.get('/', async(req, res) => {
      }))
     }));
   
-  res.render('index.njk', { 
-    allSkills: allSkills, 
+  res.render('index.njk', {  
     checkboxGroups: checkboxGroups, 
   });
 });
 
-app.get('/question', async(req, res) => {
-  const data = await client.request();
-  
-  const questions = data.questions.data.map(questionData => ({
-    questionText: questionData.attributes.question,
-  }));
-  console.log(questions);
-    res.render('question.njk', {
-      questions: questions,
+app.get('/question', (req, res) => {
+
+  res.render('question.njk', { 
+    submittedData: req.query,
   });
-});
+}); 
+
 
 
 app.listen(port, () => {
@@ -253,30 +238,18 @@ const allQuestions = rawQuestions.map(question => ({
   skill: question.attributes.skills.data.map(skill => skill.attributes.skillName)
 }));
 
-//console.log(allQuestions)
+console.log(allQuestions)
 
 const questionBySkillsMapping = allQuestions.reduce((groups, question) => {
   if (!groups[question.skill]) {
     groups[question.skill] = {
-      skills: [],
+      skills: question.skill,
       question: [],
     };
   }
-  groups[question.skill].skills.push(question.skill)
+  //groups[question.skill].skills.push(question.skill)
   groups[question.skill].question.push(question)
  return groups;
 }, {});
-console.log(questionBySkillsMapping);
-console.log(JSON.stringify(questionBySkillsMapping, null, 2));
-
-//console.log(Object.values(questionBySkillsMapping));
-// const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
-//   if (!groups[skill.category]) {
-//       groups[skill.category] = {
-//         title: skill.category,
-//         skills: [],
-//       };
-//     }
-//     groups[skill.category].skills.push(skill);
-//     return groups;
-//     }, {});
+//console.log(questionBySkillsMapping);
+//console.log(JSON.stringify(questionBySkillsMapping, null, 2));
