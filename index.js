@@ -28,8 +28,27 @@ nunjucks.configure([
 
 app.set('view engine', 'njk');
 
-const queryGetQuestionData = gql` {
+const queryGetQuestionData = gql`
+{
   questions {
+    data {
+      attributes {
+        question
+        skills {
+          data {
+            attributes {
+              skillName
+            }
+          } 
+        }  
+      }
+    }
+  }
+}
+`;
+const queryGetQuestionDatanew = gql`
+query ($selectedSkills:SkillFiltersInput) {
+  questions (filters:{skills:$selectedSkills}) {
     data {
       attributes {
         question
@@ -47,7 +66,8 @@ const queryGetQuestionData = gql` {
 `;
 
 
-const queryGetSkillData = gql` {
+const queryGetSkillData = gql` 
+{
   skills {
     data {
       attributes {
@@ -65,17 +85,15 @@ const queryGetSkillData = gql` {
   }
 `;
 
-app.get('/', async(req, res) => {
-  const data = await client.request(queryGetSkillData)
-  const rawSkills = data.skills.data;
-
-  const allSkills = rawSkills.map(rawSkill => ({
+function fetchSkills(rawSkills) {
+  return rawSkills.map(rawSkill => ({
     title: rawSkill.attributes.skillName,
     category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName,
-    })
-   );
- 
-  const skillsByCategoryMapping = allSkills.reduce((groups, skill) => {
+  }));
+}
+
+function fetchSkillsByCategoryMapping(allSkills){
+  return allSkills.reduce((groups, skill) => {
     if (!groups[skill.category]) {
         groups[skill.category] = {
           title: skill.category,
@@ -85,31 +103,39 @@ app.get('/', async(req, res) => {
       groups[skill.category].skills.push(skill);
       return groups;
       }, {});
- 
-  const checkboxGroups = Object.values(skillsByCategoryMapping).map(group => ({
-     title: group.title,
-     checkboxes: group.skills.map(skill => ({
-       value: skill.title,
-       text: skill.title,
-     }))
-    }));
+}
+
+function fetchCheckbox(skillsByCategoryMapping) {
+  return Object.values(skillsByCategoryMapping).map(group => ({
+    title: group.title,
+    checkboxes: group.skills.map(skill => ({
+      value: skill.title,
+      text: skill.title,
+    }))
+   }));
+}
+
+app.get('/', async(req, res) => {
+  const data = await client.request(queryGetSkillData);
+  const rawSkills = data.skills.data;
+  const allSkills = fetchSkills(rawSkills);
+  const skillsByCategoryMapping = fetchSkillsByCategoryMapping(allSkills);
+  const checkboxGroups = fetchCheckbox(skillsByCategoryMapping);
   
   res.render('index.njk', {  
     checkboxGroups: checkboxGroups, 
   });
 });
 
-app.get('/question', async(req, res) => {
-  const data = await client.request(queryGetQuestionData)
-
-  const rawQuestions = data.questions.data;
-  
-  const allQuestions = rawQuestions.map(question => ({
+function fetchQuestions(rawQuestions) {
+  return rawQuestions.map(question => ({
     question: question.attributes.question,
     skill: question.attributes.skills.data[0].attributes.skillName,
   }));
-  
-  const questionBySkillsMapping = allQuestions.reduce((groups, question) => {
+}
+
+function fetchQuestionsBySkillsMapping(allQuestions) {
+  return allQuestions.reduce((groups, question) => {
     if (!groups[question.skill]) {
       groups[question.skill] = {
         skills: question.skill,
@@ -119,7 +145,25 @@ app.get('/question', async(req, res) => {
     groups[question.skill].question.push(question)
    return groups;
   }, {});
+}
 
+app.get('/question', async(req, res) => {
+  // const queryParams = {
+  //   selectedSkills: {
+  //     or: req.query.skills.split(",")
+  //       .map(skillId =>({
+  //         id: {
+  //           eq: skillId
+  //         }
+  //       }))
+  //   }
+  // };
+  const data = await client.request(queryGetQuestionData); //, queryParams)
+  //console.log(data);
+  const rawQuestions = data.questions.data;
+  const allQuestions = fetchQuestions(rawQuestions);
+  const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
+  
   console.log(questionBySkillsMapping);
   console.log(req.query);
 
