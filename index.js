@@ -134,20 +134,30 @@ function fetchQuestions(rawQuestions) {
   }));
 }
 
-function fetchQuestionsBySkillsMapping(allQuestions) {
+// function fetchQuestionsBySkillsMapping(allQuestions) {
+//   return allQuestions.reduce((groups, question) => {
+//     if (!groups[question.skill]) {
+//       groups[question.skill] = {
+//         skills: question.skill,
+//         question: [],
+//       };
+//     }
+//     groups[question.skill].question.push(question)
+//    return groups;
+//   }, {});
+// }
+
+function fetchQuestionsBySkillsMappingtest(allQuestions) {
   return allQuestions.reduce((groups, question) => {
     if (!groups[question.skill]) {
-      groups[question.skill] = {
-        skills: question.skill,
-        question: [],
-      };
+      groups[question.skill] = [];  // Initialize the skill key with an empty array
     }
-    groups[question.skill].question.push(question)
-   return groups;
+    groups[question.skill].push(question.question);  // Push only the question string
+    return groups;
   }, {});
 }
 
-app.get('/question', async(req, res) => {
+app.post('/question', async(req, res) => {
   // const queryParams = {
   //   selectedSkills: {
   //     or: req.query.skills.split(",")
@@ -159,19 +169,17 @@ app.get('/question', async(req, res) => {
   //   }
   // };
   const data = await client.request(queryGetQuestionData); //, queryParams)
-  //console.log(data);
   const rawQuestions = data.questions.data;
   const allQuestions = fetchQuestions(rawQuestions);
-  const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
+  const questionBySkillsMapping = fetchQuestionsBySkillsMappingtest(allQuestions);
   
-  console.log(questionBySkillsMapping);
-  console.log(req.query);
+ //console.log(questionBySkillsMapping);
+  //console.log(req.body);
 
-  const accordion = Object.values(questionBySkillsMapping).map(skill => ({
-}));
+const accordion = Object.values(questionBySkillsMapping);
 
   res.render('question.njk', { 
-    submittedData: req.query,
+    submittedData: req.body,
     accordion: accordion,
   });
 });
