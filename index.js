@@ -154,8 +154,9 @@ app.get('/', async(req, res) => {
   const skillIdData = await client.request(queryGetSkillId);
   const rawIds = skillIdData.skills.data;
   const allSkillIds = fetchSkillId(rawIds);
+
   const nameByIdMapping = fetchIdByNameMapping(allSkillIds);
-  //console.log(nameByIdMapping);
+  console.log(nameByIdMapping);
 
   res.render('index.njk', {  
     checkboxGroups: checkboxGroups, 
@@ -190,7 +191,7 @@ app.post('/question', async(req, res) => {
       }))
     }
   };
-  const data = await client.request(queryGetQuestionDatanew, queryParams); //, queryParams)
+  const data = await client.request(queryGetQuestionData, queryParams); //, queryParams)
   const rawQuestions = data.questions.data;
   const allQuestions = fetchQuestions(rawQuestions);
   const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
