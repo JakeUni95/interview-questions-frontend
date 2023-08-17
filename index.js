@@ -85,6 +85,35 @@ const queryGetSkillData = gql`
   }
 `;
 
+const queryGetSkillId = gql`
+{
+  skills {
+    data {
+      id
+      attributes {
+        skillName
+      }
+    }
+  }
+}`;
+
+function fetchSkillId(rawIds){
+  return rawIds.map(rawIds => ({
+    id: rawIds.id,
+    skill: rawIds.attributes.skillName,
+}));
+}
+
+function fetchIdByNameMapping(allSkillIds) {
+    return allSkillIds.reduce((groups, id) => {
+      if(!groups[id.skill]) {
+        groups[id.skill] = []; 
+      }
+      groups[id.skill].push(id.id); 
+      return groups;
+    }, {});
+}
+
 function fetchSkills(rawSkills) {
   return rawSkills.map(rawSkill => ({
     title: rawSkill.attributes.skillName,
@@ -116,12 +145,18 @@ function fetchCheckbox(skillsByCategoryMapping) {
 }
 
 app.get('/', async(req, res) => {
-  const data = await client.request(queryGetSkillData);
-  const rawSkills = data.skills.data;
+  const skillNameData = await client.request(queryGetSkillData);
+  const rawSkills = skillNameData.skills.data;
   const allSkills = fetchSkills(rawSkills);
   const skillsByCategoryMapping = fetchSkillsByCategoryMapping(allSkills);
   const checkboxGroups = fetchCheckbox(skillsByCategoryMapping);
   
+  const skillIdData = await client.request(queryGetSkillId);
+  const rawIds = skillIdData.skills.data;
+  const allSkillIds = fetchSkillId(rawIds);
+  const nameByIdMapping = fetchIdByNameMapping(allSkillIds);
+  //console.log(nameByIdMapping);
+
   res.render('index.njk', {  
     checkboxGroups: checkboxGroups, 
   });
@@ -134,47 +169,34 @@ function fetchQuestions(rawQuestions) {
   }));
 }
 
-// function fetchQuestionsBySkillsMapping(allQuestions) {
-//   return allQuestions.reduce((groups, question) => {
-//     if (!groups[question.skill]) {
-//       groups[question.skill] = {
-//         skills: question.skill,
-//         question: [],
-//       };
-//     }
-//     groups[question.skill].question.push(question)
-//    return groups;
-//   }, {});
-// }
-
-function fetchQuestionsBySkillsMappingtest(allQuestions) {
+function fetchQuestionsBySkillsMapping(allQuestions) {
   return allQuestions.reduce((groups, question) => {
     if (!groups[question.skill]) {
-      groups[question.skill] = [];  // Initialize the skill key with an empty array
+      groups[question.skill] = []; 
     }
-    groups[question.skill].push(question.question);  // Push only the question string
+    groups[question.skill].push(question.question); 
     return groups;
   }, {});
 }
 
 app.post('/question', async(req, res) => {
-  // const queryParams = {
-  //   selectedSkills: {
-  //     or: req.query.skills.split(",")
-  //       .map(skillId =>({
-  //         id: {
-  //           eq: skillId
-  //         }
-  //       }))
-  //   }
-  // };
-  const data = await client.request(queryGetQuestionData); //, queryParams)
+  const selectedSkillsArray = Object.values(req.body);
+  const queryParams = {
+    selectedSkills: {
+      or: selectedSkillsArray.map(skill => ({
+        id: {
+          eq: skill
+        }
+      }))
+    }
+  };
+  const data = await client.request(queryGetQuestionDatanew, queryParams); //, queryParams)
   const rawQuestions = data.questions.data;
   const allQuestions = fetchQuestions(rawQuestions);
-  const questionBySkillsMapping = fetchQuestionsBySkillsMappingtest(allQuestions);
+  const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
   
- //console.log(questionBySkillsMapping);
-  //console.log(req.body);
+ console.log(questionBySkillsMapping);
+  console.log(req.body);
 
 const accordion = Object.values(questionBySkillsMapping);
 
