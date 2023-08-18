@@ -114,6 +114,17 @@ function fetchIdByNameMapping(allSkillIds) {
     }, {});
 }
 
+function fetchNameByidMapping(allSkillIds) {
+  return allSkillIds.reduce((groups, name) => {
+    if(!groups[name.skill]) {
+      groups[name.skill] = []; 
+    }
+    groups[name.skill].push(name.id); 
+    return groups;
+  }, {});
+}
+
+
 function fetchSkills(rawSkills) {
   return rawSkills.map(rawSkill => ({
     title: rawSkill.attributes.skillName,
@@ -198,12 +209,16 @@ app.post('/question', async(req, res) => {
   const rawQuestions = data.questions.data;
   const allQuestions = fetchQuestions(rawQuestions);
   const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
-  
-  //console.log(questionBySkillsMapping);
-  //console.log(req.body);
 
-  
-const accordion = Object.values(questionBySkillsMapping);
+  const skillIdData = await client.request(queryGetSkillId);
+  const rawIds = skillIdData.skills.data;
+  const allSkillIds = fetchSkillId(rawIds);
+  const IdbyNameMapping = fetchNameByidMapping(allSkillIds);
+
+  console.log(IdbyNameMapping);
+  console.log(req.body);
+
+  const accordion = Object.values(questionBySkillsMapping);
 
   res.render('question.njk', { 
     submittedData: req.body,
