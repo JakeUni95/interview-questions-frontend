@@ -134,11 +134,11 @@ function fetchSkillsByCategoryMapping(allSkills){
       }, {});
 }
 
-function fetchCheckbox(skillsByCategoryMapping) {
+function fetchCheckbox(skillsByCategoryMapping, nameByIdMapping) {
   return Object.values(skillsByCategoryMapping).map(group => ({
     title: group.title,
     checkboxes: group.skills.map(skill => ({
-      value: skill.title,
+      value: nameByIdMapping[skill.title],
       text: skill.title,
     }))
    }));
@@ -149,14 +149,15 @@ app.get('/', async(req, res) => {
   const rawSkills = skillNameData.skills.data;
   const allSkills = fetchSkills(rawSkills);
   const skillsByCategoryMapping = fetchSkillsByCategoryMapping(allSkills);
-  const checkboxGroups = fetchCheckbox(skillsByCategoryMapping);
   
   const skillIdData = await client.request(queryGetSkillId);
   const rawIds = skillIdData.skills.data;
   const allSkillIds = fetchSkillId(rawIds);
 
   const nameByIdMapping = fetchIdByNameMapping(allSkillIds);
-  console.log(nameByIdMapping);
+  const checkboxGroups = fetchCheckbox(skillsByCategoryMapping, nameByIdMapping);
+
+  //console.log(nameByIdMapping);
 
   res.render('index.njk', {  
     checkboxGroups: checkboxGroups, 
@@ -181,24 +182,27 @@ function fetchQuestionsBySkillsMapping(allQuestions) {
 }
 
 app.post('/question', async(req, res) => {
-  const selectedSkillsArray = Object.values(req.body);
+  const selectedSkillsInputs = Object.values(req.body).flat();
+
   const queryParams = {
     selectedSkills: {
-      or: selectedSkillsArray.map(skill => ({
-        id: {
-          eq: skill
+      or: selectedSkillsInputs.map(skillId => ({
+        id: { 
+          eq: skillId 
         }
       }))
     }
   };
-  const data = await client.request(queryGetQuestionData, queryParams); //, queryParams)
+
+  const data = await client.request(queryGetQuestionDatanew, queryParams); //, queryParams)
   const rawQuestions = data.questions.data;
   const allQuestions = fetchQuestions(rawQuestions);
   const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
   
- console.log(questionBySkillsMapping);
-  console.log(req.body);
+  //console.log(questionBySkillsMapping);
+  //console.log(req.body);
 
+  
 const accordion = Object.values(questionBySkillsMapping);
 
   res.render('question.njk', { 
