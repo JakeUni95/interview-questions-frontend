@@ -56,29 +56,31 @@
 
 {% from "govuk/components/accordion/macro.njk" import govukAccordion %}
 
+
+{% set itemsList = [] %}
+
 {% for question in accordion %}
   {% for question in question %}
+    {% set itemsList = (itemsList.push({
+        heading: {
+            text: question
+        },
+        content: {
+            html: ""
+            + "<h3 class='govuk-heading-s'>Why do we ask this?</h3>" 
+            + "<p class='govuk-body'>We want to know if the interviewee knows what makes a language object-oriented.</p>"
+            + "<h3 class ='govuk-heading-s'>Guidance answer</h3>"
+            + "<p class='govuk-body'>Java is not a pure object-oriented language as it uses primitive types such as byte, boolean, char, short, int, float, long and double.</p>"
+        }
+    }), itemsList) %}
+{% endfor %}
+{% endfor %}
 
 {{ govukAccordion({
-  id: "accordion-default",
-  items: [
-    {
-      heading: {
-        text: question
-      },
-      content: {
-        html: ""
-        + "<h3 class='govuk-heading-s'>Why do we ask this?</h3>" 
-        + "<p class='govuk-body'>We want to know if the interviewee knows what makes a language object-oriented.</p>"
-        + "<h3 class ='govuk-heading-s'>Guidance answer</h3>"
-        + "<p class='govuk-body'>Java is not a pure object-oriented language as it uses primitive types such as byte, boolean, char, short, int, float, long and double.</p>"
-      }
-    }
-  ]
+    id: "accordion-default",
+    items: itemsList
 }) }}
 
-  {% endfor %}
-{% endfor %}
 
 {% endblock %}
 

@@ -29,24 +29,6 @@ nunjucks.configure([
 app.set('view engine', 'njk');
 
 const queryGetQuestionData = gql`
-{
-  questions {
-    data {
-      attributes {
-        question
-        skills {
-          data {
-            attributes {
-              skillName
-            }
-          } 
-        }  
-      }
-    }
-  }
-}
-`;
-const queryGetQuestionDatanew = gql`
 query ($selectedSkills:SkillFiltersInput) {
   questions (filters:{skills:$selectedSkills}) {
     data {
@@ -205,7 +187,7 @@ app.post('/question', async(req, res) => {
     }
   };
 
-  const data = await client.request(queryGetQuestionDatanew, queryParams); //, queryParams)
+  const data = await client.request(queryGetQuestionData, queryParams); //, queryParams)
   const rawQuestions = data.questions.data;
   const allQuestions = fetchQuestions(rawQuestions);
   const questionBySkillsMapping = fetchQuestionsBySkillsMapping(allQuestions);
@@ -215,8 +197,8 @@ app.post('/question', async(req, res) => {
   const allSkillIds = fetchSkillId(rawIds);
   const IdbyNameMapping = fetchNameByidMapping(allSkillIds);
 
-  console.log(IdbyNameMapping);
-  console.log(req.body);
+  //console.log(IdbyNameMapping);
+  //console.log(req.body);
 
   const accordion = Object.values(questionBySkillsMapping);
 
