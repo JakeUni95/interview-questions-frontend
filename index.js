@@ -34,6 +34,8 @@ query ($selectedSkills:SkillFiltersInput) {
     data {
       attributes {
         question
+        whyDoWeAskThis
+        guidanceAnswer
         skills {
           data {
             attributes {
@@ -160,16 +162,23 @@ app.get('/', async(req, res) => {
 function fetchQuestions(rawQuestions) {
   return rawQuestions.map(question => ({
     question: question.attributes.question,
+    whyDoWeAskThis: question.attributes.whyDoWeAskThis,
+    guidanceAnswer: question.attributes.guidanceAnswer,
     skill: question.attributes.skills.data[0].attributes.skillName,
   }));
 }
+
 
 function fetchQuestionsBySkillsMapping(allQuestions) {
   return allQuestions.reduce((groups, question) => {
     if (!groups[question.skill]) {
       groups[question.skill] = []; 
     }
-    groups[question.skill].push(question.question); 
+    groups[question.skill].push({
+      question: question.question,
+      whyDoWeAskThis: question.whyDoWeAskThis,
+      guidanceAnswer: question.guidanceAnswer
+    });
     return groups;
   }, {});
 }
