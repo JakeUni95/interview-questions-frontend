@@ -30,29 +30,22 @@
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% for category, skills in submittedData %}
-
-{% if skills is string %}
-  {% set skillList = skills %}
-{% else %}
-  {% set skillList = skills | join("<br>") %} 
-{% endif %}
-
-{{ govukSummaryList({
-  rows: [
-    {
-      key: {
-        text: category
-      },
-      value: {
-        html: skillList
-      }
-
-    }
-    ]
-})}}
-
-  {% endfor %}
+{% for category in skillSelectionOverview %}
+  {{
+    govukSummaryList({
+      rows: [
+        {
+          key: {
+            text: category.title
+          },
+          value: {
+            html: category.skillNames | join("<br>")
+          }
+        }
+      ]
+    })
+  }}
+{% endfor %}
 
 {% from "govuk/components/accordion/macro.njk" import govukAccordion %}
 
@@ -60,19 +53,26 @@
 
 {% for question in accordion %}
   {% for question in question %}
+    {% set questionContent %}
+      <h3 class="govuk-heading-s">Why do we ask this?</h3>
+      <div class="govuk-body">
+        {{ question.whyDoWeAskThis | safe }}
+      </div>
+      <h3 class="govuk-heading-s">Guidance answer</h3>
+      <div class="govuk-body">
+        {{ question.guidanceAnswer | safe }}
+      </div>
+    {% endset %}
+
     {% set itemsList = (itemsList.push({
-        heading: {
-            text: question.question
-        },
-        content: {
-            html: ""
-            + "<h3 class='govuk-heading-s'>Why do we ask this?</h3>"
-            + "<p class='govuk-body'>" + question.whyDoWeAskThis + "</p>"
-            + "<h3 class ='govuk-heading-s'>Guidance answer</h3>" 
-            + "<strong>" + question.guidanceAnswer + "</strong>"
-        }
+      heading: {
+        text: question.question
+      },
+      content: {
+        html: questionContent
+      }
     }), itemsList) %}
-{% endfor %}
+  {% endfor %}
 {% endfor %}
 
 {{ govukAccordion({
