@@ -1,4 +1,4 @@
-const { gql, GraphQLClient } = require("graphql-request");
+const { GraphQLClient } = require("graphql-request");
 
 const fetchAllSkills = require('./helpers/cms/fetchAllSkills');
 const fetchAllSkillIds = require('./helpers/cms/fetchAllSkillIds');
@@ -8,7 +8,8 @@ const makeCheckbox = require('./helpers/cms/makeCheckbox');
 const fetchQuestions = require('./helpers/cms/fetchQuestions.js');
 const fetchQueryParamsId = require('./helpers/cms/fetchQueryParamsId.js');
 const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills.js');
-
+const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills.js');
+const filterSelectedSkills = require('./helpers/cms/filterSelectedSkills.js');
 const getPostedArray = require('./helpers/forms/getPostedArray');
 
 function setupRoutes(app) {
@@ -26,7 +27,7 @@ function setupRoutes(app) {
     const IdByNameMapping = groupIdsByName(allSkillIdData);
   
     const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
-  
+
     res.render('index.njk', {  
       checkboxGroups: checkboxGroups, 
     });
@@ -41,35 +42,22 @@ function setupRoutes(app) {
   });
 
   app.get('/question', async(req, res) => {
-
     const selectedSkillsInputs = req.query.skills.split(',');
     const queryParams = fetchQueryParamsId(selectedSkillsInputs);
     const allQuestions = await fetchQuestions(client, queryParams);
     const questionBySkillsMapping = groupQuestionsBySkills(allQuestions);
+
     const accordion = Object.values(questionBySkillsMapping);
-    const questions = [];
 
-    const skillSelectionSet = new Set(selectedSkillsInputs);
-    const selectedSkillEntries = (await fetchAllSkills(client))
-      .filter(skill => skillSelectionSet.has(skill.id));
+    const selectedSkillEntries = await filterSelectedSkills(client, selectedSkillsInputs);
     const groupedSelectedSkills = Object.values(groupSkillsByCategory(selectedSkillEntries));
-
+    const groupedSelectedSkillsSorted = sortSelectedSkills(groupedSelectedSkills);
+    
     res.render('question.njk', { 
-      skillSelectionOverview: groupedSelectedSkills
-        .map(group => ({
-          title: group.title,
-          skillNames: group.skills
-            .map(skill => skill.title)
-            .sort(),
-        }))
-        .sort((a, b) => {
-          return a.title.localeCompare(b.title);
-        }),
-      questions,
+      skillSelectionOverview: groupedSelectedSkillsSorted,
       accordion: accordion,
     });
   });
-
 }
 
 module.exports = setupRoutes;
