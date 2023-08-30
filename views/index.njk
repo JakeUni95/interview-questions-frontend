@@ -36,10 +36,10 @@
 
   {% for group in checkboxGroups %}
   {{ govukCheckboxes({
-    name: group.title,
+    name: group.category,
     fieldset: {
       legend: {
-        html: "<strong> Select " + group.title.toLowerCase() + "</strong>",
+        html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
         classes: "govuk-fieldset__legend--m"
       }
     },

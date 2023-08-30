@@ -22,12 +22,10 @@ function setupRoutes(app) {
   app.get('/', async(req, res) => {
     const allSkills = await fetchAllSkills(client);
     const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-  
-    const allSkillIdData = await fetchAllSkillIds(client);
-    const IdByNameMapping = groupIdsByName(allSkillIdData);
-  
-    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
+    const IdByNameMapping = groupIdsByName(allSkills);
 
+    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
+ 
     res.render('index.njk', {  
       checkboxGroups: checkboxGroups, 
     });

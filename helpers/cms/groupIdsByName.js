@@ -1,9 +1,9 @@
-function groupIdsByName(allSkillIds) {
-    return allSkillIds.reduce((groups, id) => {
-      if(!groups[id.skill]) {
-        groups[id.skill] = []; 
+function groupIdsByName(allSkill) {
+    return allSkill.reduce((groups, id) => {
+      if(!groups[id.skillName]) {
+        groups[id.skillName] = []; 
       }
-      groups[id.skill].push(id.id); 
+      groups[id.skillName].push(id.id); 
       return groups;
     }, {});
 }

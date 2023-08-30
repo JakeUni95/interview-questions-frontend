@@ -25,7 +25,7 @@ async function fetchAllSkills(client) {
   return response.skills.data
     .map(rawSkill => ({
       id: rawSkill.id,
-      title: rawSkill.attributes.skillName,
+      skillName: rawSkill.attributes.skillName,
       category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName,
     }));
 }

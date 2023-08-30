@@ -1,13 +1,13 @@
 function sortSelectedSkills(groupedSelectedSkills){
   return groupedSelectedSkills
     .map(group => ({
-      title: group.title,
+      skillCategory: group.category,
       skillNames: group.skills
-        .map(skill => skill.title)
+        .map(skill => skill.skillName)
         .sort(),
     }))
     .sort((a, b) => {
-      return a.title.localeCompare(b.title);
+      return a.skillCategory.localeCompare(b.skillCategory);
     });
 }
 
