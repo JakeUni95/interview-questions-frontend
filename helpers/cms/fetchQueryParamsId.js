@@ -1,13 +1,13 @@
 function fetchQueryParamsId(selectedSkillsInputs) {
   return { 
-   selectedSkills: {
-     or: selectedSkillsInputs.map(skillId => ({
-       id: { 
-         eq: skillId 
-       }
-     }))
-   }
- };
- }
+    selectedSkills: {
+      or: selectedSkillsInputs.map(skillId => ({
+        id: { 
+          eq: skillId 
+        }
+      }))
+    }
+  };
+}
 
- module.exports = fetchQueryParamsId;
+module.exports = fetchQueryParamsId;
