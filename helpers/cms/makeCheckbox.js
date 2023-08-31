@@ -6,7 +6,7 @@ function makeCheckbox(skillsByCategoryMapping, nameByIdMapping) {
       value: nameByIdMapping[skill.skillName],
       text: skill.skillName,
     }))
-   }));
+  }));
 }
 
 module.exports = makeCheckbox;

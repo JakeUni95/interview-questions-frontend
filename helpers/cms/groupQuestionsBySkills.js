@@ -6,7 +6,7 @@ function groupQuestionsBySkills(allQuestions) {
     groups[question.skill].push({
       question: question.question,
       whyDoWeAskThis: question.whyDoWeAskThis,
-      guidanceAnswer: question.guidanceAnswer
+      guidanceAnswer: question.guidanceAnswer,
     });
     return groups;
   }, {});

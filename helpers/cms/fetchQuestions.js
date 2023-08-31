@@ -1,7 +1,6 @@
 const { gql } = require("graphql-request");
 
 const queryQuestionData = gql`
-
   query ($selectedSkills:SkillFiltersInput) {
     questions (filters:{skills:$selectedSkills}) {
       data {
