@@ -9,7 +9,7 @@ const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkill
 const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills.js');
 const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills.js');
 const fetchSkillsWithIds = require('./helpers/cms/fetchSkillsWithIds.js');
-const getPostedArray = require  ('./helpers/forms/getPostedArray');
+const getPostedArray = require ('./helpers/forms/getPostedArray');
 
 function setupRoutes(app) {
   const client = new GraphQLClient(process.env.GRAPHQL_ENDPOINT, {

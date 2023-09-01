@@ -1,14 +1,16 @@
 {% extends "govuk/template.njk" %}
 
 {% block header %}
-
+  {{ 
+    govukHeader({
+      homepageUrl: "/",
+      serviceName: "Interview question finder",
+      serviceUrl: "#"
+    }) 
+  }}
 {% endblock %}
 
-
-
-
 {% block footer %}
- 
 
 {% endblock %}
 
