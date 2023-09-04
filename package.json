@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile" : "sass --watch --no-source-map main.scss main.css"
+    "build:styles": "sass --no-source-map styles/main.scss dist/main.css",
+    "watch:styles": "sass --watch --no-source-map styles/main.scss dist/main.css",
+    "scss": "gulp build:styles"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +19,10 @@
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^5.1.0",
+    "node-sass": "^9.0.0",
     "sass": "^1.64.2"
   }
 }
