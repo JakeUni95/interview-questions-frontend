@@ -1,13 +1,15 @@
 {% extends "govuk/template.njk" %}
 
 {% block header %}
-  {{ 
-    govukHeader({
-      homepageUrl: "/",
-      serviceName: "Interview question finder",
-      serviceUrl: "#"
-    }) 
-  }}
+  <header class="govuk-header govuk-header--app" role="banner" data-module="govuk-header">
+    <div class="govuk-header__container govuk-width-container">
+      <div class="govuk-header__content">
+        <a href="/" class="govuk-header__link govuk-header__service-name">
+          Interview question finder
+        </a>
+      </div>
+    </div>
+  </header>
 {% endblock %}
 
 {% block footer %}
