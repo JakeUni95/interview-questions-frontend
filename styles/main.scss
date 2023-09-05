@@ -1,1 +1,5 @@
-@import "node_modules/govuk-frontend/govuk/all";
+@import "../node_modules/govuk-frontend/govuk/all.scss";
+
+.govuk-header--app .govuk-header__container {
+  border-bottom-color: #ea0000;
+}
