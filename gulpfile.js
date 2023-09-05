@@ -1,8 +1,13 @@
-var gulp = require('gulp');
-const sass = require('gulp-sass')(require('sass'));
-sass.compiler = require('node-sass');
-gulp.task('build:styles', function () {
-   return gulp.src('./styles/**/*.scss')
-   .pipe(sass().on('error', sass.logError))
-   .pipe(gulp.dest('./dist/'));
+const gulp = require('gulp');
+const gulpSass = require('gulp-sass');
+const sassLibrary = require('sass');
+const sassCompiler = require('node-sass');
+
+const sass = gulpSass(sassLibrary);
+sass.compiler = sassCompiler;
+
+gulp.task('build:styles', () => {
+  return gulp.src('./styles/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./dist/'));
 });

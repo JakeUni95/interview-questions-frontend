@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:styles": "sass --no-source-map styles/main.scss dist/main.css",
-    "watch:styles": "sass --watch --no-source-map styles/main.scss dist/main.css",
-    "scss": "gulp build:styles"
+    "build": "npm run build:clean && npm run build:styles && npm run build:scripts",
+    "build:clean": "rm -rf dist",
+    "build:styles": "gulp build:styles",
+    "build:scripts": "mkdir dist/govuk && cp node_modules/govuk-frontend/govuk/all.js* dist/govuk/"
   },
   "author": "",
   "license": "ISC",
