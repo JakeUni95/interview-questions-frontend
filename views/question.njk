@@ -10,75 +10,75 @@
 {% endblock %}
 
 {% block beforeContent %}
-
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-
-{{ govukBackLink({
-  text: "Back",
-  href: "/"
-}) }}
-
+  {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+  {{
+    govukBackLink({
+      text: "Back",
+      href: "/"
+    })
+  }}
 {% endblock %}
 
 {% block content %}
+  <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
 
-<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
-
-<h1 class="govuk-heading-xl">
-  {{ pageTitle }}
-</h1>  
-
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-
-{% for selectedSkill in skillSelectionOverview %}
-  {{
-    govukSummaryList({
-      rows: [
-        {
-          key: {
-            text: selectedSkill.skillCategory
-          },
-          value: {
-            html: selectedSkill.skillNames | join("<br>")
-          }
-        }
-      ]
-    })
+  <h1 class="govuk-heading-xl">
+  {{ 
+    pageTitle 
   }}
-{% endfor %}
+  </h1>  
 
-{% from "govuk/components/accordion/macro.njk" import govukAccordion %}
+  {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% set itemsList = [] %}
-
-{% for question in accordion %}
-  {% for question in question %}
-    {% set questionContent %}
-      <h3 class="govuk-heading-s">Why do we ask this?</h3>
-      <div class="govuk-body">
-        {{ question.whyDoWeAskThis | safe }}
-      </div>
-      <h3 class="govuk-heading-s">Guidance answer</h3>
-      <div class="govuk-body">
-        {{ question.guidanceAnswer | safe }}
-      </div>
-    {% endset %}
-
-    {% set itemsList = (itemsList.push({
-      heading: {
-        text: question.question
-      },
-      content: {
-        html: questionContent
-      }
-    }), itemsList) %}
+  {% for selectedSkill in skillSelectionOverview %}
+    {{
+      govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: selectedSkill.skillCategory
+            },
+            value: {
+              html: selectedSkill.skillNames | join("<br>")
+            }
+          }
+        ]
+      })
+    }}
   {% endfor %}
-{% endfor %}
 
-{{ govukAccordion({
-    id: "accordion-default",
-    items: itemsList
-}) }}
+  {% from "govuk/components/accordion/macro.njk" import govukAccordion %}
 
+  {% set itemsList = [] %}
 
+  {% for question in accordion %}
+    {% for question in question %}
+      {% set questionContent %}
+        <h3 class="govuk-heading-s">Why do we ask this?</h3>
+        <div class="govuk-body">
+          {{ question.whyDoWeAskThis | safe }}
+        </div>
+        <h3 class="govuk-heading-s">Guidance answer</h3>
+        <div class="govuk-body">
+          {{ question.guidanceAnswer | safe }}
+        </div>
+      {% endset %}
+
+      {% set itemsList = (itemsList.push({
+        heading: {
+          text: question.question
+        },
+        content: {
+          html: questionContent
+        }
+      }), itemsList) %}
+    {% endfor %}
+  {% endfor %}
+
+  {{ 
+    govukAccordion({
+      id: "accordion-default",
+      items: itemsList
+    }) 
+  }}
 {% endblock %}
