@@ -1,9 +1,9 @@
 function buildSelectedSkillsQueryFilter(selectedSkillsInputs) {
   return { 
     selectedSkills: {
-      or: selectedSkillsInputs.map(skillId => ({
-        id: { 
-          eq: skillId,
+      or: selectedSkillsInputs.map(skillSlug => ({
+        slug: { 
+          eq: skillSlug,
         }
       }))
     }

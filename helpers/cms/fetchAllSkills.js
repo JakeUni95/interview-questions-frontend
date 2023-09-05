@@ -7,6 +7,7 @@ const queryAllSkills = gql`
         id
         attributes {
           skillName
+          slug
           skillCategories {
             data {
               attributes {
@@ -26,6 +27,7 @@ async function fetchAllSkills(client) {
     .map(rawSkill => ({
       id: rawSkill.id,
       skillName: rawSkill.attributes.skillName,
+      slug: rawSkill.attributes.slug,
       category: rawSkill.attributes.skillCategories.data[0].attributes.skillCategoryName,
     }));
 }

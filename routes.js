@@ -1,14 +1,14 @@
 const { GraphQLClient } = require("graphql-request");
 
 const fetchAllSkills = require('./helpers/cms/fetchAllSkills');
-const groupIdsByName = require('./helpers/cms/groupIdsByName.js');
+const groupSlugsByName = require('./helpers/cms/groupSlugsByName.js');
 const groupSkillsByCategory = require('./helpers/cms/groupSkillsByCategory');
 const makeCheckbox = require('./helpers/cms/makeCheckbox');
 const fetchQuestions = require('./helpers/cms/fetchQuestions.js');
 const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter.js');
 const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills.js');
 const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills.js');
-const fetchSkillsWithIds = require('./helpers/cms/fetchSkillsWithIds.js');
+const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs.js');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
 
 function setupRoutes(app) {
@@ -21,7 +21,7 @@ function setupRoutes(app) {
   app.get('/', async(req, res) => {
     const allSkills = await fetchAllSkills(client);
     const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-    const IdByNameMapping = groupIdsByName(allSkills);
+    const IdByNameMapping = groupSlugsByName(allSkills);
 
     const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
 
@@ -31,7 +31,7 @@ function setupRoutes(app) {
   });
   
   app.post('/', async(req, res) => {
-    let selectedSkillsInputs = getPostedArray(req, "selectedSkillIds");
+    let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
     const skillSelection = selectedSkillsInputs.join(',');
 
@@ -46,7 +46,7 @@ function setupRoutes(app) {
 
     const accordion = Object.values(questionBySkillsMapping);
 
-    const selectedSkillEntries = await fetchSkillsWithIds(client, selectedSkillsInputs);
+    const selectedSkillEntries = await fetchSkillsWithSlugs(client, selectedSkillsInputs);
     const groupedSelectedSkills = Object.values(groupSkillsByCategory(selectedSkillEntries));
     const groupedSelectedSkillsSorted = sortSelectedSkills(groupedSelectedSkills);
 
