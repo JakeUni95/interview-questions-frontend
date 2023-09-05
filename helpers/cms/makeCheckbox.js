@@ -1,9 +1,9 @@
-function makeCheckbox(skillsByCategoryMapping, nameByIdMapping) {
+function makeCheckbox(skillsByCategoryMapping, idByNameMapping) {
   return Object.values(skillsByCategoryMapping).map(group => ({
     category: group.category,
     checkboxes: group.skills.map(skill => ({
-      name: "selectedSkillIds",
-      value: nameByIdMapping[skill.skillName],
+      name: "selectedSkillSlugs",
+      value: idByNameMapping[skill.skillName],
       text: skill.skillName,
     }))
   }));
