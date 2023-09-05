@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile" : "sass --watch --no-source-map main.scss main.css"
+    "build": "npm run build:clean && npm run build:styles && npm run build:scripts",
+    "build:clean": "rm -rf dist",
+    "build:styles": "gulp build:styles",
+    "build:scripts": "mkdir dist/govuk && cp node_modules/govuk-frontend/govuk/all.js* dist/govuk/"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +20,10 @@
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^5.1.0",
+    "node-sass": "^9.0.0",
     "sass": "^1.64.2"
   }
 }
