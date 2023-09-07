@@ -1,0 +1,28 @@
+{% extends "_base.njk" %}
+
+{% set pageTitle = "Error" %}
+
+{% block head %}
+  <link href="/main.css" rel="stylesheet">
+{% endblock %}
+
+{% block pageTitle %}
+  {{ pageTitle }}
+{% endblock %}
+
+{% block content %}
+
+  {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+  {{ 
+    govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: [
+        {
+          text: "Please select a minimum of one skill.",
+          href: "/"
+        }
+      ]
+    })   
+  }}
+{% endblock %}

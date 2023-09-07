@@ -55,6 +55,12 @@ function setupRoutes(app) {
       accordion: accordion,
     });
   });
+
+  app.get('/error', async (req, res) => {
+    res.render('error.njk', {
+      
+    });
+  });
 }
 
 module.exports = setupRoutes;
