@@ -10,6 +10,7 @@ const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills.js'
 const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills.js');
 const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs.js');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
+const isEmptyValidation = require ('./helpers/forms/isEmptyValidation');
 
 function setupRoutes(app) {
   const client = new GraphQLClient(process.env.GRAPHQL_ENDPOINT, {
@@ -34,8 +35,7 @@ function setupRoutes(app) {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
     const skillSelection = selectedSkillsInputs.join(',');
-
-    res.redirect(`/question?skills=${skillSelection}`);
+    isEmptyValidation(skillSelection, res);
   });
 
   app.get('/question', async(req, res) => {
@@ -57,6 +57,7 @@ function setupRoutes(app) {
   });
 
   app.get('/error', async (req, res) => {
+
     res.render('error.njk', {
       
     });
