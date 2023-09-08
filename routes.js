@@ -11,6 +11,7 @@ const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills');
 const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
 const isEmptyValidation = require ('./helpers/forms/isEmptyValidation');
+const fetchSelectedSkillsSlugs = require('./helpers/forms/fetchSelectedSkillsSlugs');
 const isValidSlug = require ('./helpers/forms/isValidSlug');
 
 
@@ -52,9 +53,9 @@ function setupRoutes(app) {
     const groupedSelectedSkills = Object.values(groupSkillsByCategory(selectedSkillEntries));
     const groupedSelectedSkillsSorted = sortSelectedSkills(groupedSelectedSkills);
 
-    const validSlugs = selectedSkillEntries.map(entry => entry.slug);  
+    const selectedSkillsSlugs = fetchSelectedSkillsSlugs(selectedSkillEntries);  
 
-    if (isValidSlug(validSlugs, selectedSkillsInputs, res)) {
+    if (isValidSlug(selectedSkillsSlugs, selectedSkillsInputs, res)) {
       return;
     } 
 
