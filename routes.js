@@ -1,16 +1,18 @@
 const { GraphQLClient } = require("graphql-request");
 
 const fetchAllSkills = require('./helpers/cms/fetchAllSkills');
-const groupSlugsByName = require('./helpers/cms/groupSlugsByName.js');
+const groupSlugsByName = require('./helpers/cms/groupSlugsByName');
 const groupSkillsByCategory = require('./helpers/cms/groupSkillsByCategory');
 const makeCheckbox = require('./helpers/cms/makeCheckbox');
-const fetchQuestions = require('./helpers/cms/fetchQuestions.js');
-const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter.js');
-const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills.js');
-const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills.js');
-const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs.js');
+const fetchQuestions = require('./helpers/cms/fetchQuestions');
+const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter');
+const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills');
+const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills');
+const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
 const isEmptyValidation = require ('./helpers/forms/isEmptyValidation');
+const isValidSlug = require ('./helpers/forms/isValidSlug');
+
 
 function setupRoutes(app) {
   const client = new GraphQLClient(process.env.GRAPHQL_ENDPOINT, {
@@ -49,6 +51,12 @@ function setupRoutes(app) {
     const selectedSkillEntries = await fetchSkillsWithSlugs(client, selectedSkillsInputs);
     const groupedSelectedSkills = Object.values(groupSkillsByCategory(selectedSkillEntries));
     const groupedSelectedSkillsSorted = sortSelectedSkills(groupedSelectedSkills);
+
+    const validSlugs = selectedSkillEntries.map(entry => entry.slug);  
+
+    if (isValidSlug(validSlugs, selectedSkillsInputs, res)) {
+      return;
+    } 
 
     res.render('question.njk', { 
       skillSelectionOverview: groupedSelectedSkillsSorted,
