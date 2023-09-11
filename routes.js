@@ -10,7 +10,7 @@ const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills');
 const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills');
 const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
-const isEmptyValidation = require ('./helpers/forms/isEmptyValidation');
+const isValidSkillSelection = require ('./helpers/forms/isValidSkillSelection');
 const fetchSelectedSkillsSlugs = require('./helpers/forms/fetchSelectedSkillsSlugs');
 const isValidSlug = require ('./helpers/forms/isValidSlug');
 
@@ -38,7 +38,7 @@ function setupRoutes(app) {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
     const skillSelection = selectedSkillsInputs.join(',');
-    isEmptyValidation(skillSelection, res);
+    isValidSkillSelection(skillSelection, res);
   });
 
   app.get('/question', async(req, res) => {
@@ -56,7 +56,7 @@ function setupRoutes(app) {
     const selectedSkillsSlugs = fetchSelectedSkillsSlugs(selectedSkillEntries);  
 
     if (isValidSlug(selectedSkillsSlugs, selectedSkillsInputs, res)) {
-      return;
+      return res.redirect(`/question?skills=${selectedSkillsSlugs.join(',')}`);
     } 
 
     res.render('question.njk', { 
