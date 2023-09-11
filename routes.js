@@ -10,7 +10,6 @@ const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills');
 const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills');
 const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
-const isValidSkillSelection = require ('./helpers/forms/isValidSkillSelection');
 const fetchSelectedSkillsSlugs = require('./helpers/forms/fetchSelectedSkillsSlugs');
 const isValidSlug = require ('./helpers/forms/isValidSlug');
 
@@ -31,15 +30,30 @@ function setupRoutes(app) {
 
     res.render('index.njk', {  
       checkboxGroups: checkboxGroups, 
+      showErrors: false,
     });
   });
   
   app.post('/', async(req, res) => {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
-    const skillSelection = selectedSkillsInputs.join(',');
-    isValidSkillSelection(skillSelection, res);
+    const isSelected = !!selectedSkillsInputs.length;
+
+    if (isSelected) {
+      res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
+    } else {
+      const allSkills = await fetchAllSkills(client);
+      const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
+      const IdByNameMapping = groupSlugsByName(allSkills);
+      const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
+
+    res.render('index.njk', {  
+      checkboxGroups: checkboxGroups,
+      showErrors: true,
+    });
+    }
   });
+
 
   app.get('/question', async(req, res) => {
     const selectedSkillsInputs = req.query.skills.split(',');

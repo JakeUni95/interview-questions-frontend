@@ -30,6 +30,23 @@
       categories to receive relevant 
       questions.
   </p>
+
+
+  {% if showErrors %}
+    {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+    {{ 
+      govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+          {
+            text: "Please select a minimum of one skill.",
+            href: "/"
+          }
+        ]
+      }) 
+    }}
+  {% endif %}
   
   {% from "govuk/components/button/macro.njk" import govukButton %}
   
@@ -51,6 +68,7 @@
         items: group.checkboxes
       }) 
     }}
+    {% set checkboxErrorMessage = null %}
   {% endfor %}
 
   {{ 
