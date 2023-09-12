@@ -30,16 +30,16 @@ function setupRoutes(app) {
 
     res.render('index.njk', {  
       checkboxGroups: checkboxGroups, 
-      showErrors: false,
+      hasErrors: false,
     });
   });
   
   app.post('/', async(req, res) => {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
-    const isSelected = !!selectedSkillsInputs.length;
+    const isSkillSelected = !!selectedSkillsInputs.length;
 
-    if (isSelected) {
+    if (isSkillSelected) {
       res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
     } else {
       const allSkills = await fetchAllSkills(client);
@@ -49,7 +49,7 @@ function setupRoutes(app) {
 
     res.render('index.njk', {  
       checkboxGroups: checkboxGroups,
-      showErrors: true,
+      hasErrors: true,
     });
     }
   });

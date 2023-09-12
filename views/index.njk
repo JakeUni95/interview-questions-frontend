@@ -31,8 +31,7 @@
       questions.
   </p>
 
-
-  {% if showErrors %}
+  {% if hasErrors %}
     {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
     {{ 
@@ -53,22 +52,42 @@
   <form action="/" method="POST">
 
   {% for group in checkboxGroups %}
-    {{ 
-      govukCheckboxes({
-        name: group.category,
-        fieldset: {
-          legend: {
-            html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
-            classes: "govuk-fieldset__legend--m"
-          }
-        },
-        hint: {
-          text: "Select all that apply."
-        },
-        items: group.checkboxes
-      }) 
-    }}
-    {% set checkboxErrorMessage = null %}
+    {% if hasErrors %}
+      {{ 
+        govukCheckboxes({
+          name: group.category,
+          errorMessage: {
+            text: ""
+          },
+          fieldset: {
+            legend: {
+              html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Select all that apply."
+          },
+          items: group.checkboxes
+        }) 
+      }}
+    {% else %}
+      {{ 
+        govukCheckboxes({
+          name: group.category,
+          fieldset: {
+            legend: {
+              html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Select all that apply."
+          },
+          items: group.checkboxes
+        }) 
+      }}
+    {% endif %}
   {% endfor %}
 
   {{ 
