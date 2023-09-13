@@ -1,5 +1,4 @@
 const fetchAllSkills = require('./fetchAllSkills');
-
 const { GraphQLClient } = require('graphql-request');
 
 describe('fetchAllSkills', () => {
