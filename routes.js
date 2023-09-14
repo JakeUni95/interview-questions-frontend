@@ -1,9 +1,6 @@
 const { GraphQLClient } = require("graphql-request");
 
-const fetchAllSkills = require('./helpers/cms/fetchAllSkills');
-const groupSlugsByName = require('./helpers/cms/groupSlugsByName');
 const groupSkillsByCategory = require('./helpers/cms/groupSkillsByCategory');
-const makeCheckbox = require('./helpers/cms/makeCheckbox');
 const fetchQuestions = require('./helpers/cms/fetchQuestions');
 const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter');
 const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills');
@@ -12,6 +9,7 @@ const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
 const fetchSelectedSkillsSlugs = require('./helpers/forms/fetchSelectedSkillsSlugs');
 const isValidSlug = require ('./helpers/forms/isValidSlug');
+const handleSkillSelection = require ('./helpers/cms/handleSkillSelection');
 
 
 function setupRoutes(app) {
@@ -21,28 +19,9 @@ function setupRoutes(app) {
     },
   });
 
-
-
-  async function handleSkillSelection(req, res) {
-    const allSkills = await fetchAllSkills(client);
-    const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-    const slugByNameMapping = groupSlugsByName(allSkills);
-    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, slugByNameMapping);
-
-    if (res.locals.hasSelectionError) {
-      res.render('index.njk', {  
-        checkboxGroups: checkboxGroups,
-        hasErrors: true,
-      });
-    } else {
-      res.render('index.njk', {
-        checkboxGroups: checkboxGroups,
-        hasErrors: false,
-      });
-    }
-  }
-
-  app.get("/", handleSkillSelection);
+  app.get("/", (req, res) => {
+    handleSkillSelection(client, req, res)
+  })
 
   app.post("/", async (req, res) => {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
@@ -51,7 +30,7 @@ function setupRoutes(app) {
 
     if (!hasSkillSelection) {
       res.locals.hasSelectionError = true;
-      return handleSkillSelection(req, res);
+      return handleSkillSelection(client, req, res);
     }
     res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
   });
