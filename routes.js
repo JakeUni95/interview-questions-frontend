@@ -26,8 +26,8 @@ function setupRoutes(app) {
   async function handleSkillSelection(req, res) {
     const allSkills = await fetchAllSkills(client);
     const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-    const IdByNameMapping = groupSlugsByName(allSkills);
-    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
+    const slugByNameMapping = groupSlugsByName(allSkills);
+    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, slugByNameMapping);
 
     if (res.locals.hasSelectionError) {
       res.render('index.njk', {  
