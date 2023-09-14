@@ -20,40 +20,41 @@ function setupRoutes(app) {
       authorization: `bearer ${process.env.GRAPHQL_TOKEN}`,
     },
   });
-  
-  app.get('/', async(req, res) => {
+
+
+
+  async function handleSkillSelection(req, res) {
     const allSkills = await fetchAllSkills(client);
     const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
     const IdByNameMapping = groupSlugsByName(allSkills);
-
     const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
 
-    res.render('index.njk', {  
-      checkboxGroups: checkboxGroups, 
-      hasErrors: false,
-    });
-  });
-  
-  app.post('/', async(req, res) => {
-    let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
-
-    const hasSkillSelection = !!selectedSkillsInputs.length;
-
-    if (hasSkillSelection) {
-      res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
-    } else {
-      const allSkills = await fetchAllSkills(client);
-      const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-      const IdByNameMapping = groupSlugsByName(allSkills);
-      const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
-
+    if (res.locals.hasSelectionError) {
       res.render('index.njk', {  
         checkboxGroups: checkboxGroups,
         hasErrors: true,
       });
+    } else {
+      res.render('index.njk', {
+        checkboxGroups: checkboxGroups,
+        hasErrors: false,
+      });
     }
-  });
+  }
 
+  app.get("/", handleSkillSelection);
+
+  app.post("/", async (req, res) => {
+    let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
+
+    const hasSkillSelection = !!selectedSkillsInputs.length;
+
+    if (!hasSkillSelection) {
+      res.locals.hasSelectionError = true;
+      return handleSkillSelection(req, res);
+    }
+    res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
+  });
 
   app.get('/question', async(req, res) => {
     const selectedSkillsInputs = req.query.skills.split(',');
