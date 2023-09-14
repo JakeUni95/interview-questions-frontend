@@ -37,9 +37,9 @@ function setupRoutes(app) {
   app.post('/', async(req, res) => {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
-    const isSkillSelected = !!selectedSkillsInputs.length;
+    const hasSkillSelection = !!selectedSkillsInputs.length;
 
-    if (isSkillSelected) {
+    if (hasSkillSelection) {
       res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
     } else {
       const allSkills = await fetchAllSkills(client);
@@ -47,10 +47,10 @@ function setupRoutes(app) {
       const IdByNameMapping = groupSlugsByName(allSkills);
       const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
 
-    res.render('index.njk', {  
-      checkboxGroups: checkboxGroups,
-      hasErrors: true,
-    });
+      res.render('index.njk', {  
+        checkboxGroups: checkboxGroups,
+        hasErrors: true,
+      });
     }
   });
 
