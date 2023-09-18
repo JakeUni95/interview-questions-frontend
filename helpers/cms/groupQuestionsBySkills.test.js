@@ -27,25 +27,53 @@ const classQuestionWithoutSkill = {
 }
 
 
+const pythonQuestionWithSkill = {
+  question: 'What is a class?',
+  whyDoWeAskThis: 'To see if they have an understanding of classes.',
+  guidanceAnswer: 'A class is like a blueprint for creating objects.',
+  skill: 'Python',
+}
+
+const pythonQuestionWithoutSkill = {
+  question: 'What is a class?',
+  whyDoWeAskThis: 'To see if they have an understanding of classes.',
+  guidanceAnswer: 'A class is like a blueprint for creating objects.',
+}
+
 describe('groupQuestionsBySkills', () => {
-  it.each([
-    [
-      [], 
-      {}
-    ],
-    [
-      [{skill: 'Java'}],
-      { 'Java': [{}]}
-    ],
-    [
-      [javaQuestionWithSkill], 
-      {'Java': [javaQuestionWithoutSkill]}
-    ],
-    [
-      [classQuestionWithSkill, javaQuestionWithSkill], 
-      {'Java': [classQuestionWithoutSkill, javaQuestionWithoutSkill]}
-    ],
-  ])('given questions %p, should group by skills as %p', (input, expectedResult) => {
-    expect(groupQuestionsBySkills(input)).toEqual(expectedResult);
+
+  describe('Typical Usage', () => {
+    it.each([
+      [
+        [javaQuestionWithSkill], 
+        {'Java': [javaQuestionWithoutSkill]}
+      ],
+      [
+        [classQuestionWithSkill, javaQuestionWithSkill], 
+        {'Java': [classQuestionWithoutSkill, javaQuestionWithoutSkill]}
+      ],
+      [
+        [javaQuestionWithSkill, pythonQuestionWithSkill], 
+        {'Java': [javaQuestionWithoutSkill], 'Python': [pythonQuestionWithoutSkill]}
+      ],
+    ])('given questions %p, should group by skills as %p', (input, expectedResult) => {
+      expect(groupQuestionsBySkills(input)).toEqual(expectedResult);
+    });
   });
+
+  describe('Edge Cases', () => {
+    it.each([
+      [
+        [], 
+        {}
+      ],
+      [
+        [{skill: 'Java'}],
+        { 'Java': [{}]}
+      ],
+    ])('given questions %p, should group by skills as %p', (input, expectedResult) => {
+      expect(groupQuestionsBySkills(input)).toEqual(expectedResult);
+    });
+  });
+
 });
