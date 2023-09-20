@@ -2,104 +2,92 @@ const sortSelectedSkills = require('./sortSelectedSkills');
 
 describe('sortSelectedSkills', () => {
 
-  it('It should correctly sort skill categories and skill names', () => {
+  describe('Typical Usage', () => {
 
-    const emptyInput = [];
-    const emptyOutput = [];
+    it.each([
+      [
+        [{
+            category: 'Programming languages',
+            skills: [
+              { skillName: 'Java' },
+              { skillName: 'C#' }
+            ],
+          }],
+        [{
+            skillCategory: 'Programming languages',
+            skillNames: ['C#', 'Java'],
+          }]
+      ],
+      [
+        [{
+            category: 'Programming languages',
+            skills: [
+              { skillName: 'Python' },
+              { skillName: 'C#' },
+              { skillName: 'Java' }
+            ],
+          }],
+        [{
+            skillCategory: 'Programming languages',
+            skillNames: ['C#', 'Java', 'Python']
+          }]
+      ],
+      [
+        [{
+            category: 'Programming languages',
+            skills: [
+              { skillName: 'Java' }
+            ]
+          },
+          { 
+            category: 'Infrastructure',
+            skills: [
+              { skillName: 'Azure' }
+            ]
+          }],
+        [{
+            skillCategory: 'Infrastructure',
+            skillNames: [
+              'Azure'
+            ]
+          },
+          {
+            skillCategory: 'Programming languages',
+            skillNames: [
+              'Java'
+            ]
+          }],
+      ],
+    ])('It should correctly sort skill categories and skill names', (input, expectedResult) => {
+      expect(sortSelectedSkills(input)).toEqual(expectedResult);
+    });
+  });
 
-    const OneSkillsSameCategory = [
-      {
-        category: 'Programming languages',
-        skills: [
-          { skillName: 'Java' }
+  describe('Edge Cases', () => {
+
+    it.each([
+      [
+        [], 
+        []
+      ],
+      [  
+        [
+          {
+            category: 'Programming languages',
+            skills: [
+              { skillName: 'Java' }
+            ],
+          },
         ],
-      },
-    ];
-
-    const OneSkillsSameCategoryOutput = [
-      {
-        skillCategory: 'Programming languages',
-        skillNames: ['Java']
-      },
-    ];
-
-    const TwoSkillsSameCategory = [
-      {
-        category: 'Programming languages',
-        skills: [
-          { skillName: 'Java', },
-          { skillName: 'C#' }
-        ],
-      },
-    ];
-
-    const TwoSkillsSameCategoryOutput = [
-      {
-        skillCategory: 'Programming languages',
-        skillNames: ['C#', 'Java'],
-      },
-    ];
-
-    const ThreeSkillsSameCategory = [
-      {
-        category: 'Programming languages',
-        skills: [
-          { skillName: 'Python', },
-          { skillName: 'C#' },
-          { skillName: 'Java' }
-        ],
-      },
-    ];
-
-    const ThreeSkillsSameCategoryOutput = [
-      {
-        skillCategory: 'Programming languages',
-        skillNames: ['C#', 'Java', 'Python']
-      },
-    ];
-
-    const OneSkillInTwoCategories = [
-      {
-        category: 'Programming languages',
-        skills: [
-          { skillName: 'Java' }
+        [
+          {
+            skillCategory: 'Programming languages',
+            skillNames: ['Java'],
+          },
         ]
-      },
-      { 
-        category: 'Infrastructure',
-        skills: [
-          { skillName: 'Azure' }
-        ]
-      }
-    ];
-
-    const OneSkillInTwoCategoriesOutput = [
-      {
-        skillCategory: 'Infrastructure',
-        skillNames: [
-          'Azure'
-        ]
-      },
-      {
-        skillCategory: 'Programming languages',
-        skillNames: [
-          'Java'
-        ]
-      }
-    ];
-    const emptyInputResult = sortSelectedSkills(emptyInput);
-    expect(emptyInputResult).toEqual(emptyOutput);
-
-    const OneSkillsSameCategoryResult = sortSelectedSkills(OneSkillsSameCategory);
-    expect(OneSkillsSameCategoryResult).toEqual(OneSkillsSameCategoryOutput);
-
-    const TwoSkillsSameCategoryResult = sortSelectedSkills(TwoSkillsSameCategory);
-    expect(TwoSkillsSameCategoryResult).toEqual(TwoSkillsSameCategoryOutput);
-
-    const ThreeSkillsSameCategoryResult = sortSelectedSkills(ThreeSkillsSameCategory);
-    expect(ThreeSkillsSameCategoryResult).toEqual(ThreeSkillsSameCategoryOutput);
-
-    const OneSkillInTwoCategoriesResult = sortSelectedSkills(OneSkillInTwoCategories)
-    expect(OneSkillInTwoCategoriesResult).toEqual(OneSkillInTwoCategoriesOutput);
+      ],
+    ])('It should handle edge cases and return %p', (input, expectedResult) => {
+      expect(sortSelectedSkills(input)).toEqual(expectedResult);
+    });
   });
 });
