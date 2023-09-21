@@ -1,15 +1,16 @@
 const { GraphQLClient } = require("graphql-request");
 
-const fetchAllSkills = require('./helpers/cms/fetchAllSkills');
-const groupSlugsByName = require('./helpers/cms/groupSlugsByName.js');
 const groupSkillsByCategory = require('./helpers/cms/groupSkillsByCategory');
-const makeCheckbox = require('./helpers/cms/makeCheckbox');
-const fetchQuestions = require('./helpers/cms/fetchQuestions.js');
-const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter.js');
-const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills.js');
-const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills.js');
-const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs.js');
+const fetchQuestions = require('./helpers/cms/fetchQuestions');
+const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter');
+const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills');
+const sortSelectedSkills = require('./helpers/cms/sortSelectedSkills');
+const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
+const fetchSelectedSkillsSlugs = require('./helpers/forms/fetchSelectedSkillsSlugs');
+const isValidSlug = require ('./helpers/forms/isValidSlug');
+const handleSkillSelection = require ('./helpers/cms/handleSkillSelection');
+
 
 function setupRoutes(app) {
   const client = new GraphQLClient(process.env.GRAPHQL_ENDPOINT, {
@@ -17,25 +18,21 @@ function setupRoutes(app) {
       authorization: `bearer ${process.env.GRAPHQL_TOKEN}`,
     },
   });
-  
-  app.get('/', async(req, res) => {
-    const allSkills = await fetchAllSkills(client);
-    const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-    const IdByNameMapping = groupSlugsByName(allSkills);
 
-    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
+  app.get("/", (req, res) => {
+    handleSkillSelection(client, req, res)
+  })
 
-    res.render('index.njk', {  
-      checkboxGroups: checkboxGroups, 
-    });
-  });
-  
-  app.post('/', async(req, res) => {
+  app.post("/", async (req, res) => {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
-    const skillSelection = selectedSkillsInputs.join(',');
+    const hasSkillSelection = !!selectedSkillsInputs.length;
 
-    res.redirect(`/question?skills=${skillSelection}`);
+    if (!hasSkillSelection) {
+      res.locals.hasSelectionError = true;
+      return handleSkillSelection(client, req, res);
+    }
+    res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
   });
 
   app.get('/question', async(req, res) => {
@@ -50,9 +47,22 @@ function setupRoutes(app) {
     const groupedSelectedSkills = Object.values(groupSkillsByCategory(selectedSkillEntries));
     const groupedSelectedSkillsSorted = sortSelectedSkills(groupedSelectedSkills);
 
+    const selectedSkillsSlugs = fetchSelectedSkillsSlugs(selectedSkillEntries);  
+
+    if (isValidSlug(selectedSkillsSlugs, selectedSkillsInputs, res)) {
+      return res.redirect(`/question?skills=${selectedSkillsSlugs.join(',')}`);
+    } 
+
     res.render('question.njk', { 
       skillSelectionOverview: groupedSelectedSkillsSorted,
       accordion: accordion,
+    });
+  });
+
+  app.get('/error', async (req, res) => {
+
+    res.render('error.njk', {
+      
     });
   });
 }

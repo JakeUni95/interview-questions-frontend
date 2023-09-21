@@ -8,7 +8,6 @@
 
 {% block pageTitle %}
   {{ pageTitle }}
-
 {% endblock %}
 
 {% block content %}
@@ -17,45 +16,87 @@
   {% from "govuk/components/input/macro.njk" import govukInput %}
   {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 
-  {% call govukFieldset({
-    legend: {
-      text: "What skills are you hiring for?",
-      classes: "govuk-fieldset__legend--l",
-      isPageHeading: true
-    }
-  }) %}
+  {% 
+    call govukFieldset({
+      legend: {
+        text: "What skills are you hiring for?",
+        classes: "govuk-fieldset__legend--l",
+        isPageHeading: true
+      }
+    }) 
+  %}
 
   <p class="govuk-body">Please select the required 
       categories to receive relevant 
       questions.
   </p>
-    
+
+  {% if hasErrors %}
+    {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+    {{ 
+      govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+          {
+            text: "Please select a minimum of one skill.",
+            href: "/"
+          }
+        ]
+      }) 
+    }}
+  {% endif %}
+  
   {% from "govuk/components/button/macro.njk" import govukButton %}
   
   <form action="/" method="POST">
 
   {% for group in checkboxGroups %}
-  {{ govukCheckboxes({
-    name: group.category,
-    fieldset: {
-      legend: {
-        html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
-        classes: "govuk-fieldset__legend--m"
-      }
-    },
-    hint: {
-      text: "Select all that apply."
-    },
-    items: group.checkboxes
-  }) }}
+    {% if hasErrors %}
+      {{ 
+        govukCheckboxes({
+          name: group.category,
+          errorMessage: {
+            text: ""
+          },
+          fieldset: {
+            legend: {
+              html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Select all that apply."
+          },
+          items: group.checkboxes
+        }) 
+      }}
+    {% else %}
+      {{ 
+        govukCheckboxes({
+          name: group.category,
+          fieldset: {
+            legend: {
+              html: "<strong> Select " + group.category.toLowerCase() + "</strong>",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Select all that apply."
+          },
+          items: group.checkboxes
+        }) 
+      }}
+    {% endif %}
   {% endfor %}
 
-    {{ govukButton({
+  {{ 
+    govukButton({
       text: "Save and continue",
       type: "submit"
-    }) }}
-    </form>
+    }) 
+  }}
+  </form>
 
   {% endcall %}
-
 {% endblock %}
