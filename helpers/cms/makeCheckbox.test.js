@@ -22,10 +22,10 @@ describe('makeCheckbox', () => {
         },
       };
 
-      const idByNameMapping = {
-        'Java': 'javaId',
-        'C#': 'csharpId',
-        'Azure': 'azureId',
+      const slugByNameMapping = {
+        'Java': 'java',
+        'C#': 'c-sharp',
+        'Azure': 'azure',
       };
 
       const expectedResult = [
@@ -34,12 +34,12 @@ describe('makeCheckbox', () => {
           checkboxes: [
             {
               name: 'selectedSkillSlugs',
-              value: 'javaId',
+              value: 'java',
               text: 'Java',
             },
             {
               name: 'selectedSkillSlugs',
-              value: 'csharpId',
+              value: 'c-sharp',
               text: 'C#',
             },
           ],
@@ -49,14 +49,14 @@ describe('makeCheckbox', () => {
           checkboxes: [
             {
               name: 'selectedSkillSlugs',
-              value: 'azureId',
+              value: 'azure',
               text: 'Azure',
             },
           ],
         },
       ];
 
-      expect(makeCheckbox(skillsByCategoryMapping, idByNameMapping)).toEqual(expectedResult);
+      expect(makeCheckbox(skillsByCategoryMapping, slugByNameMapping)).toEqual(expectedResult);
     });
   });
 
@@ -64,11 +64,11 @@ describe('makeCheckbox', () => {
 
     it('It should handle empty skillsByCategoryMapping', () => {
       const skillsByCategoryMapping = {};
-      const idByNameMapping = {};
+      const slugByNameMapping = {};
 
       const expectedResult = [];
 
-      expect(makeCheckbox(skillsByCategoryMapping, idByNameMapping)).toEqual(expectedResult);
+      expect(makeCheckbox(skillsByCategoryMapping, slugByNameMapping)).toEqual(expectedResult);
     });
 
     it('It should handle empty skills in a category', () => {
