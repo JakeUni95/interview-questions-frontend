@@ -1,8 +1,5 @@
-function isValidSlug(selectedSkillsSlugs, selectedSkillsInputs, res) {
-  if (selectedSkillsSlugs.length !== selectedSkillsInputs.length) {
-    return true; 
-  }
-  return false; 
+function isValidSlug(selectedSkillsSlugs, selectedSkillsInputs) {
+  return selectedSkillsSlugs.length !== selectedSkillsInputs.length;
 }
 
 module.exports = isValidSlug;

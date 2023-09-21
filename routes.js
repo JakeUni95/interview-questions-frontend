@@ -1,9 +1,6 @@
 const { GraphQLClient } = require("graphql-request");
 
-const fetchAllSkills = require('./helpers/cms/fetchAllSkills');
-const groupSlugsByName = require('./helpers/cms/groupSlugsByName');
 const groupSkillsByCategory = require('./helpers/cms/groupSkillsByCategory');
-const makeCheckbox = require('./helpers/cms/makeCheckbox');
 const fetchQuestions = require('./helpers/cms/fetchQuestions');
 const buildSelectedSkillsQueryFilter = require('./helpers/cms/buildSelectedSkillsQueryFilter');
 const groupQuestionsBySkills = require('./helpers/cms/groupQuestionsBySkills');
@@ -12,6 +9,7 @@ const fetchSkillsWithSlugs = require('./helpers/cms/fetchSkillsWithSlugs');
 const getPostedArray = require ('./helpers/forms/getPostedArray');
 const fetchSelectedSkillsSlugs = require('./helpers/forms/fetchSelectedSkillsSlugs');
 const isValidSlug = require ('./helpers/forms/isValidSlug');
+const handleSkillSelection = require ('./helpers/cms/handleSkillSelection');
 
 
 function setupRoutes(app) {
@@ -20,40 +18,22 @@ function setupRoutes(app) {
       authorization: `bearer ${process.env.GRAPHQL_TOKEN}`,
     },
   });
-  
-  app.get('/', async(req, res) => {
-    const allSkills = await fetchAllSkills(client);
-    const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-    const IdByNameMapping = groupSlugsByName(allSkills);
 
-    const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
+  app.get("/", (req, res) => {
+    handleSkillSelection(client, req, res)
+  })
 
-    res.render('index.njk', {  
-      checkboxGroups: checkboxGroups, 
-      showErrors: false,
-    });
-  });
-  
-  app.post('/', async(req, res) => {
+  app.post("/", async (req, res) => {
     let selectedSkillsInputs = getPostedArray(req, "selectedSkillSlugs");
 
-    const isSelected = !!selectedSkillsInputs.length;
+    const hasSkillSelection = !!selectedSkillsInputs.length;
 
-    if (isSelected) {
-      res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
-    } else {
-      const allSkills = await fetchAllSkills(client);
-      const skillsByCategoryMapping = groupSkillsByCategory(allSkills);
-      const IdByNameMapping = groupSlugsByName(allSkills);
-      const checkboxGroups = makeCheckbox(skillsByCategoryMapping, IdByNameMapping);
-
-    res.render('index.njk', {  
-      checkboxGroups: checkboxGroups,
-      showErrors: true,
-    });
+    if (!hasSkillSelection) {
+      res.locals.hasSelectionError = true;
+      return handleSkillSelection(client, req, res);
     }
+    res.redirect(`/question?skills=${selectedSkillsInputs.join(',')}`);
   });
-
 
   app.get('/question', async(req, res) => {
     const selectedSkillsInputs = req.query.skills.split(',');
